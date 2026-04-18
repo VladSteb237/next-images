@@ -9,6 +9,7 @@ const credentialsSchema = z.object({
 });
 
 const authConfig = {
+  trustHost: true,
   session: {
     strategy: "jwt",
   },

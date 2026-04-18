@@ -4,6 +4,19 @@ import { auth } from "@/auth";
 import { createOrRetrieveCustomer } from "@/utils/data/admin";
 import { getSubscription } from "@/utils/data/queries";
 
+function getURL(path: string = "") {
+  let url =
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    process.env.NEXTAUTH_URL ??
+    process.env.VERCEL_URL ??
+    "http://localhost:3000";
+
+  url = url.startsWith("http") ? url : `https://${url}`;
+  url = url.endsWith("/") ? url.slice(0, -1) : url;
+
+  return path ? `${url}${path}` : url;
+}
+
 export type CheckoutResponse = {
   url?: string;
   errorRedirect?: string;
@@ -52,8 +65,8 @@ export async function checkoutWithStripe(
           user_id: user.id,
         },
       },
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}${redirectPath}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/protected/pricing`,
+      success_url: getURL(redirectPath),
+      cancel_url: getURL("/protected/pricing"),
     });
 
     if (!checkoutSession.url) {
