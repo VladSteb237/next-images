@@ -1,0 +1,12 @@
+{
+        const subscription = event.data.object as Stripe.Subscription;
+
+        await supabaseAdmin
+          .from("subscriptions")
+          .delete()
+          .eq("id", subscription.id);
+
+        console.log("Subscription deleted:", subscription.id);
+
+        break;
+      }
