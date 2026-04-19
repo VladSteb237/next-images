@@ -1,5 +1,4 @@
 "use server";
-import { redirect } from "next/navigation";
 import { AuthError } from "next-auth";
 import { createUser } from "@/lib/auth";
 import { ensureDbIndexes } from "@/lib/db";
@@ -18,11 +17,7 @@ export const signInAction = async (formData: FormData) => {
     });
   } catch (error) {
     if (error instanceof AuthError) {
-      return encodedRedirect(
-        "error",
-        "/sign-in",
-        "Invalid email or password.",
-      );
+      return encodedRedirect("error", "/sign-in", "Invalid email or password.");
     }
 
     throw error;
@@ -36,11 +31,6 @@ export const signUpAction = async (formData: FormData) => {
   try {
     await ensureDbIndexes();
     await createUser(email, password);
-    await signIn("credentials", {
-      email,
-      password,
-      redirectTo: "/protected",
-    });
   } catch (error) {
     if (error instanceof Error) {
       return encodedRedirect("error", "/sign-up", error.message);
@@ -48,9 +38,14 @@ export const signUpAction = async (formData: FormData) => {
 
     return encodedRedirect("error", "/sign-up", "Unable to create account.");
   }
+
+  await signIn("credentials", {
+    email,
+    password,
+    redirectTo: "/protected",
+  });
 };
 
 export const signOutAction = async () => {
   await signOut({ redirectTo: "/sign-in" });
-  return redirect("/sign-in");
 };
